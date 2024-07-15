@@ -13,6 +13,8 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_GAME: ${{ secrets.FIREBASE_GAME }}
         run: |
           echo "Firebase Token: $FIREBASE_TOKEN"
           echo "Firebase App ID: $FIREBASE_APP_ID"
+          echo "Firebase App ID: $FIREBASE_GAME"
