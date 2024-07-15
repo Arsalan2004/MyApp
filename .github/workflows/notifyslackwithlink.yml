@@ -42,17 +42,17 @@ jobs:
 
       - name: Retrieve Firebase App Distribution Link
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           echo "Retrieving latest Firebase App Distribution release..."
-          firebase_output=$(firebase appdistribution:distribute --app $FIREBASE_APP_ID --token $FIREBASE_TOKEN --groups "testers" --json)
-          echo "Firebase output: $firebase_output"
-          APK_LINK=$(echo $firebase_output | jq -r '.release.url')
+          response=$(curl -s "https://firebaseappdistribution.googleapis.com/v1alpha/apps/$FIREBASE_APP_ID/releases" -H "Authorization: Bearer $FIREBASE_API_KEY")
+          echo "Firebase API response: $response"
+          APK_LINK=$(echo $response | jq -r '.releases[0].binaryDownloadUri')
           echo "APK_LINK: $APK_LINK"
           echo "APK_LINK=$APK_LINK" >> $GITHUB_ENV
 
-      - name: Notify Slack on Build Success
+      - name: Notify Slack on Success
         if: success()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -60,7 +60,7 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"text":"Build succeeded for QA. Download it from: '"$APK_LINK"'"}' $SLACK_WEBHOOK_URL
 
-      - name: Notify Slack on Build Failure
+      - name: Notify Slack on Failure
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
