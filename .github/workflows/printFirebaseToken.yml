@@ -3,7 +3,7 @@ name: Print Firebase Token and App ID
 on:
   push:
     branches:
-      - main
+      - qa
 
 jobs:
   print-firebase-token-id:
