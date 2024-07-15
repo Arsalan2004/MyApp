@@ -4,7 +4,7 @@ name: Build Release
 on:
   push:
     branches:
-      - main
+      - qa
 
 jobs:
   build-release:
@@ -37,3 +37,4 @@ jobs:
         with:
           name: release-build
           path: ./android/app/build/outputs/apk/release/
+# 1//0gHjsLf6SjXtJCgYIARAAGBASNwF-L9IrOIJi4lvcoZRQrw1i1x9lb2nZzksAIF62QnfGv3CaRQPmszZUrsLGDK4B6Fz9pf650mM
