@@ -1,0 +1,33 @@
+name: Build Release
+
+# Trigger the workflow on push events to the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-release:
+    # Use the latest Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the release version
+        run: npm run build:release
+
+      - name: Archive release build
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-build
+          path: ./build/release/

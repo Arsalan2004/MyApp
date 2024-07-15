@@ -11,7 +11,8 @@
     "type-check": "tsc",
     "test:report": "jest --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --coverage",
     "pod-install": "cd ios && pod install && cd ..",
-    "postinstall": "npx patch-package"
+    "postinstall": "npx patch-package",
+    "build":"cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
     "@react-native-firebase/app": "^20.1.0",
