@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Build the release version
-        run: npm run build:release
+        run: npm run build
 
       - name: Archive release build
         uses: actions/upload-artifact@v2
