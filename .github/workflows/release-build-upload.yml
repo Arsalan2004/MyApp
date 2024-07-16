@@ -51,7 +51,18 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           npm install -g firebase-tools
-          firebase appdistribution:distribute ./android/app/build/outputs/apk/release/app-release.apk --app $FIREBASE_APP_ID --token $FIREBASE_TOKEN
+
+      - name: Retrieve download link
+        run: |
+          response=$(curl -s -X GET \
+            "https://firebaseappdistribution.googleapis.com/v1alpha/apps/${{ secrets.FIREBASE_APP_ID }}/releases" \
+            -H "Authorization: Bearer $(gcloud auth print-access-token)")
+          echo "Firebase API response: $response"
+          APK_LINK=$(echo $response | jq -r '.releases[0].binaryDownloadUri')
+          echo "APK_LINK: $APK_LINK"
+          echo "APK_LINK=$APK_LINK" >> $GITHUB_ENV
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
 
       - name: Notify Slack on Build Success
         if: success()
