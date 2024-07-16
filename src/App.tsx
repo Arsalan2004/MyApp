@@ -12,8 +12,6 @@ export const queryClient = new QueryClient();
 export const storage = new MMKV();
 
 function App() {
-  console.log("adadfs");
-  console.log("adadfs2");
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider storage={storage}>

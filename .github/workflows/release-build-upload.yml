@@ -4,7 +4,7 @@ name: Build Release
 on:
   push:
     branches:
-      - qa
+      - main
 
 jobs:
   build-release:
@@ -51,30 +51,18 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           npm install -g firebase-tools
-
-      - name: Get Download Link and Post to Slack
-        id: get-link
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
-        run: |
-          echo ${{ secrets.GAC_KEY }} > $GOOGLE_APPLICATION_CREDENTIALS
-          access_token=$(gcloud auth application-default print-access-token)
-          response=$(curl -s "https://firebaseappdistribution.googleapis.com/v1/projects/${{ secrets.FIREBASE_PROJECT_ID }}/apps/${{ secrets.FIREBASE_APP_ID }}/releases" \
-            -H "Authorization: Bearer $access_token")
-          APK_LINK=$(echo $response | jq -r '.releases[0].binaryDownloadUri')
-          echo "APK_LINK=$APK_LINK" >> $GITHUB_ENV
+          firebase_output=$(firebase appdistribution:distribute ./android/app/build/outputs/apk/release/app-release.apk --app $FIREBASE_APP_ID --token $FIREBASE_TOKEN --release-notes "New build is available" --groups "testers" --json)
 
       - name: Notify Slack on Build Success
         if: success()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          APK_LINK=$(firebase appdistribution:distribute ./android/app/build/outputs/apk/release/app-release.apk --app ${{ secrets.FIREBASE_APP_ID }} --token ${{ secrets.FIREBASE_TOKEN }} --release-notes "New build is available" --groups "testers" --json | jq -r '.release.url')
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build succeeded for QA. Download it from: '"$APK_LINK"'"}' $SLACK_WEBHOOK_URL
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Successfully build please check your email for download link."}' $SLACK_WEBHOOK_URL
 
       - name: Notify Slack on Build Failure
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build failed for QA. Please check the logs for details."}' $SLACK_WEBHOOK_URL
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Failed"}' $SLACK_WEBHOOK_URL
