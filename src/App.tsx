@@ -12,6 +12,8 @@ export const queryClient = new QueryClient();
 export const storage = new MMKV();
 
 function App() {
+  console.log("add");
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider storage={storage}>
